@@ -1,6 +1,7 @@
 package com.jminango.services
 
 import com.jminango.data.vo.v1.PersonVO
+import com.jminango.data.vo.v2.PersonVO as PersonVOV2
 import com.jminango.exceptions.ResourceNotFoundException
 import com.jminango.mapper.DozerMapper
 import com.jminango.models.Person
@@ -38,6 +39,11 @@ class PersonService {
         return mapper.parseObject(entity, PersonVO::class.java)
     }
 
+    fun createPersonV2(personVOV2 : PersonVOV2) : PersonVOV2 {
+        logger.info("Create a person with name ${personVOV2.firstName}!")
+        val entity : Person = personRepository.save(mapper.parseObject(personVOV2, Person::class.java))
+        return mapper.parseObject(entity, PersonVOV2::class.java)
+    }
     fun updatePerson(personVO: PersonVO) : PersonVO {
         logger.info("Updating a person with Id ${personVO.id}")
 
