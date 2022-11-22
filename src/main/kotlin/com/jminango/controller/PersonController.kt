@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping("/person")
 class PersonController {
 
-    /*
+
     @Autowired
     private lateinit var personService : PersonService
 
@@ -39,7 +39,5 @@ class PersonController {
         personService.deletePerson(id)
         return ResponseEntity.noContent().build<Any>()
     }
-     */
-
 
 }

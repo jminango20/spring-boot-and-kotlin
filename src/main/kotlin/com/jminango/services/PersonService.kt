@@ -1,6 +1,8 @@
 package com.jminango.services
 
+import com.jminango.data.vo.v1.PersonVO
 import com.jminango.exceptions.ResourceNotFoundException
+import com.jminango.mapper.DozerMapper
 import com.jminango.models.Person
 import com.jminango.repositories.PersonRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,24 +17,31 @@ class PersonService {
 
     private val logger = Logger.getLogger(PersonService::class.java.name)
 
-    fun findAll() : List<Person> {
+    private val mapper = DozerMapper
+
+    fun findAll() : List<PersonVO> {
         logger.info("Finding all people!")
-        return personRepository.findAll()
+        val listPerson = personRepository.findAll()
+        return mapper.parseListObjects(listPerson, PersonVO::class.java)
     }
 
-    fun findById(id: Long) : Person {
+    fun findById(id: Long) : PersonVO {
         logger.info("Finding person! with id $id")
-        return personRepository.findById(id)
+        val person = personRepository.findById(id)
             .orElseThrow { ResourceNotFoundException("No records found for this Id $id") }
+        return mapper.parseObject(person, PersonVO::class.java)
     }
 
-    fun createPerson(person : Person) : Person {
-        logger.info("Create a person with name ${person.firstName}!")
-        return personRepository.save(person)
+    fun createPerson(personVO : PersonVO) : PersonVO {
+        logger.info("Create a person with name ${personVO.firstName}!")
+        val entity : Person = personRepository.save(mapper.parseObject(personVO, Person::class.java))
+        return mapper.parseObject(entity, PersonVO::class.java)
     }
 
-    fun updatePerson(person: Person) : Person {
-        logger.info("Updating a person with Id ${person.id}")
+    fun updatePerson(personVO: PersonVO) : PersonVO {
+        logger.info("Updating a person with Id ${personVO.id}")
+
+        val person = mapper.parseObject(personVO, Person::class.java)
 
         val entity = personRepository.findById(person.id)
             .orElseThrow{ResourceNotFoundException("No records found for this Id")}
@@ -42,7 +51,7 @@ class PersonService {
         entity.address = person.address
         entity.gender = person.gender
 
-        return personRepository.save(entity)
+        return mapper.parseObject(personRepository.save(entity), PersonVO::class.java)
     }
     fun deletePerson(id : Long) {
         logger.info("Delete a person with id ${id} !")
