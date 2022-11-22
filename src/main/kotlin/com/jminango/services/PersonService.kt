@@ -4,6 +4,7 @@ import com.jminango.data.vo.v1.PersonVO
 import com.jminango.data.vo.v2.PersonVO as PersonVOV2
 import com.jminango.exceptions.ResourceNotFoundException
 import com.jminango.mapper.DozerMapper
+import com.jminango.mapper.custom.PersonMapper
 import com.jminango.models.Person
 import com.jminango.repositories.PersonRepository
 import org.springframework.beans.factory.annotation.Autowired
@@ -15,6 +16,9 @@ class PersonService {
 
     @Autowired
     private lateinit var personRepository : PersonRepository
+
+    @Autowired
+    private lateinit var personMapper : PersonMapper
 
     private val logger = Logger.getLogger(PersonService::class.java.name)
 
@@ -41,8 +45,8 @@ class PersonService {
 
     fun createPersonV2(personVOV2 : PersonVOV2) : PersonVOV2 {
         logger.info("Create a person with name ${personVOV2.firstName}!")
-        val entity : Person = personRepository.save(mapper.parseObject(personVOV2, Person::class.java))
-        return mapper.parseObject(entity, PersonVOV2::class.java)
+        val entity : Person = personRepository.save(personMapper.mapVOToEntity(personVOV2))
+        return personMapper.mapEntityToVO(entity)
     }
     fun updatePerson(personVO: PersonVO) : PersonVO {
         logger.info("Updating a person with Id ${personVO.id}")
