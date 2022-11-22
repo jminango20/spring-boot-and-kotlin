@@ -12,7 +12,7 @@ import java.lang.*
 
 @RestController
 @ControllerAdvice
-class CustomizedResponseEntityExceptionHandler : ResponseEntityExceptionHandler() {
+class CustomizedResponseEntityMathOperationExceptionHandler : ResponseEntityExceptionHandler() {
 
     @ExceptionHandler(Exception::class)
     fun handleAllExceptions(ex: Exception, request: WebRequest) : ResponseEntity<ExceptionResponse>{
