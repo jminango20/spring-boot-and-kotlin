@@ -9,9 +9,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 class WebConfig : WebMvcConfigurer{
 
     override fun configureContentNegotiation(configurer: ContentNegotiationConfigurer) {
-        configurer.favorParameter(true)
-            .parameterName("mediaType") //come from Postman
-            .ignoreAcceptHeader(true)
+//        configurer.favorParameter(true)
+//            .parameterName("mediaType") //come from Postman
+//            .ignoreAcceptHeader(true)
+//            .useRegisteredExtensionsOnly(false)
+//            .defaultContentType(MediaType.APPLICATION_JSON)
+//                .mediaType("json", MediaType.APPLICATION_JSON)
+//                .mediaType("xml", MediaType.APPLICATION_XML)
+
+        configurer.favorParameter(false)
+            .ignoreAcceptHeader(false)
             .useRegisteredExtensionsOnly(false)
             .defaultContentType(MediaType.APPLICATION_JSON)
                 .mediaType("json", MediaType.APPLICATION_JSON)
