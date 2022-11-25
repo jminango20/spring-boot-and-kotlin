@@ -29,7 +29,12 @@ class PersonService {
     fun findAll() : List<PersonVO> {
         logger.info("Finding all people!")
         val listPerson = personRepository.findAll()
-        return mapper.parseListObjects(listPerson, PersonVO::class.java)
+        val listPersonVO = mapper.parseListObjects(listPerson, PersonVO::class.java)
+        for (personVO in listPersonVO){
+            val withSelfRel = linkTo(PersonController::class.java).slash(personVO.key).withSelfRel()
+            personVO.add(withSelfRel)
+        }
+        return listPersonVO
     }
 
     fun findById(id: Long) : PersonVO {
@@ -45,7 +50,10 @@ class PersonService {
     fun createPerson(personVO : PersonVO) : PersonVO {
         logger.info("Create a person with name ${personVO.firstName}!")
         val entity : Person = personRepository.save(mapper.parseObject(personVO, Person::class.java))
-        return mapper.parseObject(entity, PersonVO::class.java)
+        val personVO = mapper.parseObject(entity, PersonVO::class.java)
+        val withSelfRel = linkTo(PersonController::class.java).slash(personVO.key).withSelfRel()
+        personVO.add(withSelfRel)
+        return personVO
     }
 
     fun createPersonV2(personVOV2 : PersonVOV2) : PersonVOV2 {
@@ -66,7 +74,9 @@ class PersonService {
         entity.address = person.address
         entity.gender = person.gender
 
-        return mapper.parseObject(personRepository.save(entity), PersonVO::class.java)
+        val personVO = mapper.parseObject(personRepository.save(entity), PersonVO::class.java)
+        val withSelfRel = linkTo(PersonController::class.java).slash(personVO.key).withSelfRel()
+        return personVO.add(withSelfRel)
     }
     fun deletePerson(id : Long) {
         logger.info("Delete a person with id ${id} !")
