@@ -1,5 +1,6 @@
 package com.jminango.services
 
+import com.jminango.controller.PersonController
 import com.jminango.data.vo.v1.PersonVO
 import com.jminango.data.vo.v2.PersonVO as PersonVOV2
 import com.jminango.exceptions.ResourceNotFoundException
@@ -8,6 +9,7 @@ import com.jminango.mapper.custom.PersonMapper
 import com.jminango.models.Person
 import com.jminango.repositories.PersonRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo
 import org.springframework.stereotype.Service
 import java.util.logging.Logger
 
@@ -34,7 +36,10 @@ class PersonService {
         logger.info("Finding person! with id $id")
         val person = personRepository.findById(id)
             .orElseThrow { ResourceNotFoundException("No records found for this Id $id") }
-        return mapper.parseObject(person, PersonVO::class.java)
+        val personVO = mapper.parseObject(person, PersonVO::class.java)
+        val withSelfRel = linkTo(PersonController::class.java).slash(personVO.key).withSelfRel()
+        personVO.add(withSelfRel)
+        return personVO
     }
 
     fun createPerson(personVO : PersonVO) : PersonVO {
@@ -49,7 +54,7 @@ class PersonService {
         return personMapper.mapEntityToVO(entity)
     }
     fun updatePerson(personVO: PersonVO) : PersonVO {
-        logger.info("Updating a person with Id ${personVO.id}")
+        logger.info("Updating a person with Id ${personVO.key}")
 
         val person = mapper.parseObject(personVO, Person::class.java)
 
