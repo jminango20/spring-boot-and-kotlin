@@ -1,5 +1,6 @@
 package com.jminango.mockito.services
 
+import com.jminango.exceptions.RequiredObjectsIsNullException
 import com.jminango.mocks.MockPerson
 import com.jminango.repositories.PersonRepository
 import com.jminango.services.PersonService
@@ -47,6 +48,7 @@ internal class PersonServiceTest {
             assertEquals("Address Test${result.key}", result.address)
             assertEquals("First Name Test${result.key}", result.firstName)
             assertEquals("Last Name Test${result.key}", result.lastName)
+            assertTrue(result.links.toString().contains( "</person/v1/${result.key}>;rel=\"self\""))
         }
     }
 
@@ -89,6 +91,18 @@ internal class PersonServiceTest {
         assertEquals("Female", result.gender)
     }
 
+    @Test
+    fun failCreatePersonNull() {
+       val exception : Exception = assertThrows(RequiredObjectsIsNullException::class.java){
+           personService.createPerson(null)
+       }
+        val expectedMessage = "It is not allowed to persist a null object"
+        val actualMessage = exception.message
+
+        assertEquals(expectedMessage, actualMessage)
+        assertTrue(actualMessage!!.contains(expectedMessage))
+    }
+
     @Test //mock me permite mockar o que esta dentro do service.update -> find and repository
     fun updatePerson() {
         val entity = inputObject.mockEntity(1)
@@ -110,6 +124,18 @@ internal class PersonServiceTest {
         assertEquals("First Name Test1", result.firstName)
         assertEquals("Last Name Test1", result.lastName)
         assertEquals("Female", result.gender)
+    }
+
+    @Test
+    fun failUpdatePersonNull() {
+        val exception : Exception = assertThrows(RequiredObjectsIsNullException::class.java){
+            personService.updatePerson(null)
+        }
+        val expectedMessage = "It is not allowed to persist a null object"
+        val actualMessage = exception.message
+
+        assertEquals(expectedMessage, actualMessage)
+        assertTrue(actualMessage!!.contains(expectedMessage))
     }
 
     @Test

@@ -2,6 +2,7 @@ package com.jminango.services
 
 import com.jminango.controller.PersonController
 import com.jminango.data.vo.v1.PersonVO
+import com.jminango.exceptions.RequiredObjectsIsNullException
 import com.jminango.data.vo.v2.PersonVO as PersonVOV2
 import com.jminango.exceptions.ResourceNotFoundException
 import com.jminango.mapper.DozerMapper
@@ -47,8 +48,9 @@ class PersonService {
         return personVO
     }
 
-    fun createPerson(personVO : PersonVO) : PersonVO {
-        logger.info("Create a person with name ${personVO.firstName}!")
+    fun createPerson(personVO : PersonVO?) : PersonVO {
+        logger.info("Create a person with name!")
+        if (personVO == null) throw  RequiredObjectsIsNullException()
         val entity : Person = personRepository.save(mapper.parseObject(personVO, Person::class.java))
         val personVO = mapper.parseObject(entity, PersonVO::class.java)
         val withSelfRel = linkTo(PersonController::class.java).slash(personVO.key).withSelfRel()
@@ -61,8 +63,10 @@ class PersonService {
         val entity : Person = personRepository.save(personMapper.mapVOToEntity(personVOV2))
         return personMapper.mapEntityToVO(entity)
     }
-    fun updatePerson(personVO: PersonVO) : PersonVO {
-        logger.info("Updating a person with Id ${personVO.key}")
+    fun updatePerson(personVO: PersonVO?) : PersonVO {
+        logger.info("Updating a person with Id")
+
+        if (personVO == null) throw  RequiredObjectsIsNullException()
 
         val person = mapper.parseObject(personVO, Person::class.java)
 

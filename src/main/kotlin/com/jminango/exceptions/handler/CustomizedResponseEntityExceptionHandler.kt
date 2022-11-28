@@ -1,6 +1,7 @@
 package com.jminango.exceptions.handler
 
 import com.jminango.exceptions.ExceptionResponse
+import com.jminango.exceptions.RequiredObjectsIsNullException
 import com.jminango.exceptions.ResourceNotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -34,6 +35,16 @@ class CustomizedResponseEntityExceptionHandler : ResponseEntityExceptionHandler(
             description = request.getDescription(false)
         )
         return ResponseEntity<ExceptionResponse>(exceptionResponse, HttpStatus.NOT_FOUND)
+    }
+
+    @ExceptionHandler(RequiredObjectsIsNullException::class)
+    fun handleBadRequestExceptions(ex: Exception, request: WebRequest) : ResponseEntity<ExceptionResponse> {
+        val exceptionResponse = ExceptionResponse(
+            date = Date(),
+            message = ex.message,
+            description = request.getDescription(false)
+        )
+        return ResponseEntity<ExceptionResponse>(exceptionResponse, HttpStatus.BAD_REQUEST)
     }
 
 
