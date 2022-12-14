@@ -14,7 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema
 
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-
+//@CrossOrigin -> pode ser usado assim também
 @RestController
 @RequestMapping("/person/v1")
 @Tag(name = "People", description = "Endpoints for Managing People")
@@ -65,6 +65,7 @@ class PersonController {
     fun findAll() : List<PersonVO>{
         return personService.findAll()
     }
+    @CrossOrigin(origins = ["http://localhost:3000"])
     @GetMapping(value = ["/{id}"], produces = [MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YAML])
     @Operation(
         summary = "Finds a Person",
@@ -107,6 +108,7 @@ class PersonController {
         return personService.findById(id)
     }
 
+    @CrossOrigin(origins = ["http://localhost:3000", "https://www.google.com"])
     @PostMapping(produces = [MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YAML], consumes = [MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_YAML])
     @Operation(
         summary = "Adds a new Person",
