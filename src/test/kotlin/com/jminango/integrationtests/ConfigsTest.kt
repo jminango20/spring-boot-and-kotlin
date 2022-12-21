@@ -11,6 +11,6 @@ object ConfigsTest {
 
     const val ORIGIN_GOOGLE = "https://www.google.com"
     const val ORIGIN_SEMERU = "https://semeru.com.br"
-    const val CONTENT_LOCALHOST = "http://localhost:3000"
+    const val ORIGIN_LOCALHOST = "http://localhost:3000"
 
 }

@@ -64,6 +64,8 @@ class PersonControllerCorsWithJson : AbstractIntegrationTest() {
 				PersonVO::class.java
 		)
 
+		personVO = createPerson
+
 		assertNotNull(createPerson.id)
 		assertNotNull(createPerson.firstName)
 		assertNotNull(createPerson.lastName)
@@ -76,6 +78,116 @@ class PersonControllerCorsWithJson : AbstractIntegrationTest() {
 		assertEquals("Minango", createPerson.lastName)
 		assertEquals("Brasilia, DF, Brasil", createPerson.address)
 		assertEquals("Male", createPerson.gender)
+
+	}
+
+	@Test
+	@Order(2)
+	fun testCreateWithWrongOrigin() {
+		mockPerson()
+
+		specification = RequestSpecBuilder()
+				.addHeader(
+						ConfigsTest.HEADER_PARAM_ORIGIN,
+						ConfigsTest.ORIGIN_SEMERU
+				)
+					.setBasePath("/person/v1")
+				.setPort(ConfigsTest.SERVER_PORT)
+				.addFilter(RequestLoggingFilter(LogDetail.ALL))
+				.addFilter(ResponseLoggingFilter(LogDetail.ALL))
+				.build()
+
+		val content = RestAssured.given()
+				.spec(specification)
+				.contentType(ConfigsTest.CONTENT_TYPE_JSON)
+				.body(personVO)
+				.`when`()
+			.post()
+			.then()
+			.statusCode(403)
+			.extract()
+			.body()
+			.asString()
+
+		assertEquals("Invalid CORS request", content)
+
+	}
+
+	@Test
+	@Order(3)
+	fun findById() {
+		mockPerson()
+
+		specification = RequestSpecBuilder()
+				.addHeader(
+						ConfigsTest.HEADER_PARAM_ORIGIN,
+						ConfigsTest.ORIGIN_LOCALHOST
+				)
+				.setBasePath("/person/v1")
+				.setPort(ConfigsTest.SERVER_PORT)
+				.addFilter(RequestLoggingFilter(LogDetail.ALL))
+				.addFilter(ResponseLoggingFilter(LogDetail.ALL))
+				.build()
+
+		val content = RestAssured.given()
+				.spec(specification)
+				.contentType(ConfigsTest.CONTENT_TYPE_JSON)
+				.pathParam("id", personVO.id)
+				.`when`()["{id}"]
+				.then()
+				.statusCode(200)
+				.extract()
+				.body()
+				.asString()
+
+		val createPerson = objectMapper.readValue(
+				content,
+				PersonVO::class.java
+		)
+
+		assertNotNull(createPerson.id)
+		assertNotNull(createPerson.firstName)
+		assertNotNull(createPerson.lastName)
+		assertNotNull(createPerson.address)
+		assertNotNull(createPerson.gender)
+
+		assertTrue(createPerson.id > 0)
+
+		assertEquals("Juan", createPerson.firstName)
+		assertEquals("Minango", createPerson.lastName)
+		assertEquals("Brasilia, DF, Brasil", createPerson.address)
+		assertEquals("Male", createPerson.gender)
+
+	}
+
+	@Test
+	@Order(4)
+	fun findByIdWithWrongOrigin() {
+		mockPerson()
+
+		specification = RequestSpecBuilder()
+				.addHeader(
+						ConfigsTest.HEADER_PARAM_ORIGIN,
+						ConfigsTest.ORIGIN_SEMERU
+				)
+				.setBasePath("/person/v1")
+				.setPort(ConfigsTest.SERVER_PORT)
+				.addFilter(RequestLoggingFilter(LogDetail.ALL))
+				.addFilter(ResponseLoggingFilter(LogDetail.ALL))
+				.build()
+
+		val content = RestAssured.given()
+				.spec(specification)
+				.contentType(ConfigsTest.CONTENT_TYPE_JSON)
+				.pathParam("id", personVO.id)
+				.`when`()["{id}"]
+				.then()
+				.statusCode(403)
+				.extract()
+				.body()
+				.asString()
+
+		assertEquals("Invalid CORS request", content)
 
 	}
 
